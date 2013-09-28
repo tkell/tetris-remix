@@ -22,8 +22,7 @@
 
 <!--
 
-// Remix globals.  I need four colors / tracks
-// SND 15, 16, 7, 4
+// Remix globals. 
 var apiKey = 'WOUHTN44BMS5SMPF2';
 var trackIDs = ['TRTXBSY14165472E97', 'TRNOMVO141654877C6', 'TRIXKNU14165490C70', 'TREEQSM14165497489'];
 var trackURLs = ['audio/snd-0.mp3', 'audio/snd-1.mp3', 'audio/snd-2.mp3', 'audio/snd-3.mp3']
@@ -32,8 +31,26 @@ var remixer;
 var player;
 var tracks = [null, null, null, null];
 var context = new webkitAudioContext();
-remixer = createJRemixer(context, $, apiKey);
-player = remixer.getPlayer();
+var remixer = createJRemixer(context, $, apiKey);
+var player = remixer.getPlayer()
+var remixed = [];
+var isPlaying = false;
+
+// GLOBAL VARIABLE ALLLLLLERT
+function playLoop(player) {
+	console.log("Starting the loop");
+	var totalTime = 0;
+	for (var i = 0; i < remixed.length; i++) {
+		duration = parseFloat(remixed[i].duration);
+		totalTime = totalTime + duration;
+	}
+	totalTime = 1000 * totalTime
+	player.play(0, remixed)
+	console.log(remixed);
+	console.log(totalTime);
+	setTimeout(function() {playLoop(player, remixed)}, totalTime);
+}
+
 
 // Tetris globals
 var boardHeight = 12;
@@ -75,62 +92,49 @@ function mainBoard() {
             console.log(percent + "% of the track loaded...");
             if (tracks[remixIndex].status == 'ok') {
                 // Do the next one!
-
-
                 remixIndex = remixIndex + 1;
                 if (remixIndex < tracks.length) {
                     console.log('Loaded track ' + (remixIndex) + ', running analysis...');
                     multipleRemix(tracks, trackIDs, trackURLs);
                 }
                 else {
-                    console.log("Everything loaded, this is my jam");
+                    console.log("Everything loaded");
 
-				document.writeln('<div id="board" style="position:absolute; left:50; top:50; z-index:2; border: 1px none #000000">')
-				document.writeln('<div id="cursor" style="position:absolute; left:0; top:0; z-index:1; border: 1px none #000000"><img src="gfx/cursor.gif"></div>')
-				document.writeln('<table border="0" cellspacing="0" cellpadding="0" class="v10"><tr>')
-				document.writeln('<td>')
+					document.writeln('<div id="board" style="position:absolute; left:50; top:50; z-index:2; border: 1px none #000000">')
+					document.writeln('<div id="cursor" style="position:absolute; left:0; top:0; z-index:1; border: 1px none #000000"><img src="gfx/cursor.gif"></div>')
+					document.writeln('<table border="0" cellspacing="0" cellpadding="0" class="v10"><tr>')
+					document.writeln('<td>')
+					initBoard()
+					document.writeln('</td>')
+					document.writeln('<td width="30">&nbsp;</td>')
+					document.writeln('<td valign="top">')
+					document.writeln('<table border="0" cellspacing="1" cellpadding="10" bgcolor="#666666" class="v10">')
+					document.writeln('<tr bgcolor="#dddddd">')
+					document.writeln('<td>Level</td><td><input type="text" name="levelText" value="0" size="3" readonly class="formtext"></td>')
+					document.writeln('</tr>')
+					document.writeln('<tr bgcolor="#dddddd"><td>Score</td><td><input type="text" name="scoreText" value="0" size="3" readonly class="formtext"></td></tr>')
+					document.writeln('<tr bgcolor="#dddddd"><td>Blocks</td><td><input type="text" name="blocksText" value="0" size="3" readonly class="formtext"></td></tr>')
+					document.writeln('<tr bgcolor="#dddddd"><td colspan="2"><div align="center"><input type="button" value="Restart" onClick="location.reload()"></div></td></tr>')
+					document.writeln('</table>')
+					document.writeln('</td>')
+					document.writeln('</tr></table>')
+					document.writeln('</div>')
 
-				  
-				// I *think* that I can put my remix call here, and then call initBoard to start things...but emphasis on think.
-				// Ah, no, I think need to call the entire block below here in order to make things happen
-				// No no no, I think I need EVERYTHING in this block, which is hideous, but w/e
+					// ...just make sure you don't start with 3 in a row!
+					for (i=0;i<2;++i) { 
+						nextArray[i] = colorArray[Math.floor(Math.random()*numberColors)] 
+					}
+					var nextColor = colorArray[Math.floor(Math.random()*numberColors)]
+					for (i=2;i<boardWidth;++i) {
+						while(nextColor == nextArray[i-1] && nextColor == nextArray[i-2]) nextColor = colorArray[Math.floor(Math.random()*numberColors)]
+						nextArray[i] = nextColor
+					}
+					updateCursor()
+					updateScores()
+					newBlock() // This one starts the game
 
-
-				initBoard()
-				document.writeln('</td>')
-				document.writeln('<td width="30">&nbsp;</td>')
-				document.writeln('<td valign="top">')
-				document.writeln('<table border="0" cellspacing="1" cellpadding="10" bgcolor="#666666" class="v10">')
-				document.writeln('<tr bgcolor="#dddddd">')
-				document.writeln('<td>Level</td><td><input type="text" name="levelText" value="0" size="3" readonly class="formtext"></td>')
-				document.writeln('</tr>')
-				document.writeln('<tr bgcolor="#dddddd"><td>Score</td><td><input type="text" name="scoreText" value="0" size="3" readonly class="formtext"></td></tr>')
-				document.writeln('<tr bgcolor="#dddddd"><td>Blocks</td><td><input type="text" name="blocksText" value="0" size="3" readonly class="formtext"></td></tr>')
-				document.writeln('<tr bgcolor="#dddddd"><td colspan="2"><div align="center"><input type="button" value="Restart" onClick="location.reload()"></div></td></tr>')
-				document.writeln('</table>')
-				document.writeln('</td>')
-				document.writeln('</tr></table>')
-				document.writeln('</div>')
-
-				// ...just make sure you don't start with 3 in a row!
-				for (i=0;i<2;++i) { 
-					nextArray[i] = colorArray[Math.floor(Math.random()*numberColors)] 
-				}
-				var nextColor = colorArray[Math.floor(Math.random()*numberColors)]
-				for (i=2;i<boardWidth;++i) {
-					while(nextColor == nextArray[i-1] && nextColor == nextArray[i-2]) nextColor = colorArray[Math.floor(Math.random()*numberColors)]
-					nextArray[i] = nextColor
-				}
-				updateCursor()
-				updateScores()
-				newBlock() // This one starts the game
-
-				document.onkeypress = handler; // maybe?  A ton of globals is also a  (terrible option?)
-
-
-
-
-                }  // END REMIX TODO, END TETRIS CODE
+					document.onkeypress = handler; 
+                }  // end within-remix init
             }
         });
     }
@@ -186,15 +190,9 @@ function initBoard() {
 	for (i=0;i<boardWidth;++i) document.writeln('<td id="next' + i + '" bgcolor="#ffffff"><img src="gfx/null.gif" width="' + cellSize + '" height="' + cellSize + '"></td>')
 
 	document.writeln('</tr></table>')
-
 }
 
-
-
 // used to calculated a 4-digit number for each cell, e.g. (2,3) becomes 0203, (4,12) becomes 0412
-
-
-
 function cellNum(x,y) {
 
 	var nameStr = ""
@@ -208,27 +206,17 @@ function cellNum(x,y) {
 	nameStr += y
 
 	return nameStr
-
 }
-
-
 
 function updateCursor() {
 
 	document.all.cursor.style.left = (cursorX)*(cellSize+1)-1
 
 	document.all.cursor.style.top = (boardHeight-cursorY-1)*(cellSize+1)-1
-
 }	
 
-
-
 // shuffle blocks up to make way for a new 'next' row
-
 // the new 'next' row when chosen shouldn't complete a row of 3 horizontally or vertically
-
-
-
 function newBlock() {
 
 	for (i=0;i<boardWidth;++i) {
@@ -292,10 +280,7 @@ function newBlock() {
 	}
 
 	keepMoving = setTimeout('newBlock()', upRate)
-
 }
-
-
 
 function handler(e) {
 	if (stillPlaying == 0) return;
@@ -342,8 +327,6 @@ function handler(e) {
 	updateCursor()
 }
 
-
-
 function removeGaps(x,y) {
 	var tempPos = 0
 	for (j=0;j<Math.max(heightArray[x],y+1);++j) {
@@ -365,8 +348,6 @@ function removeGaps(x,y) {
 		if (heightArray[x] != 0) checkIndiv(x,heightArray[x]-1)
 	}
 }
-
-
 
 function updateScores() {
 	gameScore += 10*sScore
@@ -458,11 +439,23 @@ function checkDirn(x,y,dx,dy,whichOption) {
 		sScore += nBlocks
 		needDropping = 1
 		console.log("Cleared a thing:  ", clearX, clearY); 
-		// THIS IS WHERE THINGS HAPPEN YES YES YES
-		player.play(0, tracks[0].analysis.beats[0])
+		
+		// Debug examples
+		// TODO:  index in to each song properly
+		remixed.push(tracks[0].analysis.beats[0]);
+		remixed.push(tracks[0].analysis.beats[1]);
+		remixed.push(tracks[0].analysis.beats[2]);
+
+		if (isPlaying == false) {
+			playLoop(player); // HERE WE GOOO
+			isPlaying = true;
+		}
+
 		console.log(boardArray); // YES.  This is the array of colours:  I just need to figure out how to index in to it
 		// Holy shit, parallel list coordinates.  Ah well, I can work with that.
-		// OK, So I need to put a very simple play beat in here
+
+		// OK, this is not far off.  I actually need to play the array from the get-got, and then append to it in subsequent calls, right?
+
 	}
 }
 
@@ -527,6 +520,7 @@ function endGame() {
 	stillPlaying = 0
 	alert('Game over!')
 	clearTimeout(keepMoving)
+	player.stop(); // need to make this a harder disconnect
 }
 
 
