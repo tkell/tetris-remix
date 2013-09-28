@@ -24,12 +24,12 @@
 
 // Remix globals. 
 var apiKey = 'WOUHTN44BMS5SMPF2';
-var trackIDs = ['TRTXBSY14165472E97', 'TRNOMVO141654877C6', 'TRIXKNU14165490C70', 'TREEQSM14165497489'];
-var trackURLs = ['audio/snd-0.mp3', 'audio/snd-1.mp3', 'audio/snd-2.mp3', 'audio/snd-3.mp3']
+var trackIDs = ['TRTXBSY14165472E97', 'TRNOMVO141654877C6', 'TRIXKNU14165490C70', 'TREEQSM14165497489', 'TRSSGQH14166C0DAD8'];
+var trackURLs = ['audio/snd-0.mp3', 'audio/snd-1.mp3', 'audio/snd-2.mp3', 'audio/snd-3.mp3', 'audio/snd-4.mp3']
 
 var remixer;
 var player;
-var tracks = [null, null, null, null];
+var tracks = [null, null, null, null, null];
 var context = new webkitAudioContext();
 var remixer = createJRemixer(context, $, apiKey);
 var player = remixer.getPlayer()
@@ -38,7 +38,6 @@ var isPlaying = false;
 
 // GLOBAL VARIABLE ALLLLLLERT
 function playLoop(player) {
-	console.log("Starting the loop");
 	var totalTime = 0;
 	for (var i = 0; i < remixed.length; i++) {
 		duration = parseFloat(remixed[i].duration);
@@ -46,10 +45,15 @@ function playLoop(player) {
 	}
 	totalTime = 1000 * totalTime
 	player.play(0, remixed)
-	console.log(remixed);
-	console.log(totalTime);
 	setTimeout(function() {playLoop(player, remixed)}, totalTime);
 }
+
+var colorDict = {'#0066cc': 0, // blue
+				 '#009966': 1, // green
+				 '#ffcc00': 2, // yellow
+				 '#ff3300': 3, // red
+				 '#9999cc': 4, // grey
+				};
 
 
 // Tetris globals
@@ -66,18 +70,18 @@ var heightArray		= new Array()		// height of first empty in column
 var colorArray 		= new Array('#ffcc00','#ff3300','#0066cc','#009966','#9999cc','#990099','#999999')
 var speedArray		= new Array(3000,2900,2800,2700,2600,2500,2400,2300,2200,2000)
 var gameScore 		= 0
-var gameLevel		= 0							// game level from 0 - 10, affects
-var levelUp			= 1000					// number of marks needed to level up
+var gameLevel		= 0					// game level from 0 - 10, affects
+var levelUp			= 1000				// number of marks needed to level up
 var upRate			= speedArray[gameLevel]		// time between automatic lowering of block in milliseconds
 var clearedBlocks = 0
-var sScore			= 0							// more running score for a particular drop than successive score, but want to keep similar names!
-var sDrops			= 0							// successive drops (to calculate a multiplier)
-var stillPlaying	= 1							// check if game over, then stops you from moving the last block at the top from side to side!
-var needDropping	= 0							// flags off if there are enough in a row to call the function to drop cells down
+var sScore			= 0					// more running score for a particular drop than successive score, but want to keep similar names!
+var sDrops			= 0					// successive drops (to calculate a multiplier)
+var stillPlaying	= 1					// check if game over, then stops you from moving the last block at the top from side to side!
+var needDropping	= 0					// flags off if there are enough in a row to call the function to drop cells down
 var cursorX			= 3
 var cursorY			= 5
 var nextArray		= new Array()		// next row of blocks
-var blockColor 		= null					// used to check if any blocks need clearing
+var blockColor 		= null				// used to check if any blocks need clearing
 
 
 // sets up the board to start the game...
@@ -440,21 +444,22 @@ function checkDirn(x,y,dx,dy,whichOption) {
 		needDropping = 1
 		console.log("Cleared a thing:  ", clearX, clearY); 
 		
-		// Debug examples
-		// TODO:  index in to each song properly
-		remixed.push(tracks[0].analysis.beats[0]);
-		remixed.push(tracks[0].analysis.beats[1]);
-		remixed.push(tracks[0].analysis.beats[2]);
+		// Find the beats
+		for (var i = 0; i < clearX.length; i++) {
+			var colorString = boardArray[clearX[i]][clearY[i]];
+			var theTrack = tracks[colorDict[colorString]];
+			var beatIndex = (clearY[i] * 6) + clearX[i];
+
+			console.log(colorString, theTrack, beatIndex)
+			remixed.push(theTrack.analysis.beats[beatIndex])
+		}
 
 		if (isPlaying == false) {
-			playLoop(player); // HERE WE GOOO
+			playLoop(player);
 			isPlaying = true;
 		}
 
-		console.log(boardArray); // YES.  This is the array of colours:  I just need to figure out how to index in to it
-		// Holy shit, parallel list coordinates.  Ah well, I can work with that.
-
-		// OK, this is not far off.  I actually need to play the array from the get-got, and then append to it in subsequent calls, right?
+		// Print the indicies and colours of each square, as we clear them. 
 
 	}
 }
