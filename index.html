@@ -16,80 +16,46 @@
 
 
 <script type="text/javascript" src='remix.js'></script>
+<script type="text/javascript" src='buffer-loader.js'></script>
 <script language="javascript">
 
 <!--
 
 
-
+// Tetris global
 var boardHeight = 12;
 var boardWidth  = 6;
 var numberColors = 5;
 var cellSize 	= 25; // size of the blocks in pixels.  Would need to change cursor.gif too!
-
 var boardArray 		= new Array()		// array of the colours on the board
-
 var clearArray		= new Array()		// array to check which from which direction blocks are cleared
-
-var clearX				= new Array()		// keeps track of block's X value which need clearing, but only after *all* the checking!
-
-var clearY				= new Array()		// ditto for the blocks corresponding Y value
-
+var clearX			= new Array()		// keeps track of block's X value which need clearing, but only after *all* the checking!
+var clearY			= new Array()		// ditto for the blocks corresponding Y value
 var dropArray 		= new Array()		// which columns have had items cleared/dropped (1 = something cleared, 0 = nothing in this column)
-
 var heightArray		= new Array()		// height of first empty in column
-
 var colorArray 		= new Array('#ffcc00','#ff3300','#0066cc','#009966','#9999cc','#990099','#999999')
-
 var speedArray		= new Array(3000,2900,2800,2700,2600,2500,2400,2300,2200,2000)
-
 var gameScore 		= 0
-
-var gameLevel			= 0							// game level from 0 - 10, affects
-
-var levelUp				= 1000					// number of marks needed to level up
-
-var upRate				= speedArray[gameLevel]		// time between automatic lowering of block in milliseconds
-
+var gameLevel		= 0							// game level from 0 - 10, affects
+var levelUp			= 1000					// number of marks needed to level up
+var upRate			= speedArray[gameLevel]		// time between automatic lowering of block in milliseconds
 var clearedBlocks = 0
-
-var sScore				= 0							// more running score for a particular drop than successive score, but want to keep similar names!
-
-var sDrops				= 0							// successive drops (to calculate a multiplier)
-
-
-
+var sScore			= 0							// more running score for a particular drop than successive score, but want to keep similar names!
+var sDrops			= 0							// successive drops (to calculate a multiplier)
 var stillPlaying	= 1							// check if game over, then stops you from moving the last block at the top from side to side!
-
 var needDropping	= 0							// flags off if there are enough in a row to call the function to drop cells down
-
-var cursorX				= 3
-
-var cursorY				= 5
-
-
-
-var nextArray			= new Array()		// next row of blocks
-
+var cursorX			= 3
+var cursorY			= 5
+var nextArray		= new Array()		// next row of blocks
 var blockColor 		= null					// used to check if any blocks need clearing
 
 
-
 // sets up the board to start the game...
-
-
-
 function mainBoard() {
-
 	document.writeln('<div id="board" style="position:absolute; left:50; top:50; z-index:2; border: 1px none #000000">')
-
 	document.writeln('<div id="cursor" style="position:absolute; left:0; top:0; z-index:1; border: 1px none #000000"><img src="gfx/cursor.gif"></div>')
-
-
-
 	document.writeln('<table border="0" cellspacing="0" cellpadding="0" class="v10"><tr>')
-
-  document.writeln('<td>')
+    document.writeln('<td>')
 
   
 // I *think* that I can put my remix call here, and then call initBoard to start things...but emphasis on think.
@@ -97,38 +63,20 @@ function mainBoard() {
 
 
   initBoard()
-
-  
-
   document.writeln('</td>')
-
   document.writeln('<td width="30">&nbsp;</td>')
-
   document.writeln('<td valign="top">')
-
   document.writeln('<table border="0" cellspacing="1" cellpadding="10" bgcolor="#666666" class="v10">')
-
-	document.writeln('<tr bgcolor="#dddddd">')
-
+  document.writeln('<tr bgcolor="#dddddd">')
   document.writeln('<td>Level</td><td><input type="text" name="levelText" value="0" size="3" readonly class="formtext"></td>')
-
   document.writeln('</tr>')
-
   document.writeln('<tr bgcolor="#dddddd"><td>Score</td><td><input type="text" name="scoreText" value="0" size="3" readonly class="formtext"></td></tr>')
-
   document.writeln('<tr bgcolor="#dddddd"><td>Blocks</td><td><input type="text" name="blocksText" value="0" size="3" readonly class="formtext"></td></tr>')
-
   document.writeln('<tr bgcolor="#dddddd"><td colspan="2"><div align="center"><input type="button" value="Restart" onClick="location.reload()"></div></td></tr>')
-
   document.writeln('</table>')
-
   document.writeln('</td>')
-
   document.writeln('</tr></table>')
-
-
-
-	document.writeln('</div>')
+  document.writeln('</div>')
 
 
 
@@ -145,14 +93,9 @@ function mainBoard() {
 		nextArray[i] = nextColor
 
 	}
-
-
-
 	updateCursor()
-
 	updateScores()
-
-	newBlock()
+	newBlock() // This one starts the game
 
 }
 
