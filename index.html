@@ -72,7 +72,7 @@ function mainBoard() {
         remixer.remixTrackById(trackIDs[remixIndex], trackURLs[remixIndex], function(t, percent) {
             tracks[remixIndex] = t;
 
-            consol.log(percent + "% of the track loaded...");
+            console.log(percent + "% of the track loaded...");
             if (tracks[remixIndex].status == 'ok') {
                 // Do the next one!
 
@@ -93,6 +93,7 @@ function mainBoard() {
 				  
 				// I *think* that I can put my remix call here, and then call initBoard to start things...but emphasis on think.
 				// Ah, no, I think need to call the entire block below here in order to make things happen
+				// No no no, I think I need EVERYTHING in this block, which is hideous, but w/e
 
 
 				initBoard()
@@ -123,7 +124,13 @@ function mainBoard() {
 				updateCursor()
 				updateScores()
 				newBlock() // This one starts the game
-                }               
+
+				document.onkeypress = handler; // maybe?  A ton of globals is also a  (terrible option?)
+
+
+
+
+                }  // END REMIX TODO, END TETRIS CODE
             }
         });
     }
@@ -288,7 +295,7 @@ function newBlock() {
 
 }
 
-document.onkeypress = handler;
+
 
 function handler(e) {
 	if (stillPlaying == 0) return;
