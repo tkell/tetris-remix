@@ -92,6 +92,9 @@ function mainBoard() {
   document.writeln('<td>')
 
   
+// I *think* that I can put my remix call here, and then call initBoard to start things...but emphasis on think.
+// Ah, no, I think need to call the entire block below here in order to make things happen
+
 
   initBoard()
 
@@ -152,6 +155,8 @@ function mainBoard() {
 	newBlock()
 
 }
+
+// End of the init block, I thiiiiink.  
 
 
 
@@ -311,11 +316,7 @@ function newBlock() {
 
 }
 
-
-
 document.onkeypress = handler;
-
-
 
 function handler(e) {
 	if (stillPlaying == 0) return;
@@ -335,28 +336,27 @@ function handler(e) {
 		var b1 = boardArray[cursorX][cursorY]
 		var b2 = boardArray[cursorX+1][cursorY]
 
-		if (b1 == '#ffffff' && b2 == '#ffffff') return
+		if (b1 == '#ffffff' && b2 == '#ffffff') {
+			return
+		}
 
 		boardArray[cursorX][cursorY] = b2
 		boardArray[cursorX+1][cursorY] = b1
-	
 
-// ew! bit messy this bit.. if either block is a blank(white) then both columns need dropping (removeGaps()), then 
-// depending on whether it was the coloured or the white block, you choose the correct block to use checkIndiv() on.
+		// ew! bit messy this bit.. if either block is a blank(white) then both columns need dropping (removeGaps()), then 
+		// depending on whether it was the coloured or the white block, you choose the correct block to use checkIndiv() on.
 		if (b1 == '#ffffff' || b2 == '#ffffff') {
-
 			removeGaps(cursorX,cursorY)
 			removeGaps(cursorX+1,cursorY)
-
 		} else {
-
 			eval('document.all.cell' + cellNum(cursorX,cursorY) + '.style.backgroundColor = "' + b2 + '"')
 			eval('document.all.cell' + cellNum(cursorX+1,cursorY) + '.style.backgroundColor = "' + b1 + '"')
 			checkIndiv(cursorX,cursorY)
 			checkIndiv(cursorX+1,cursorY)
 		}
-
-		if (needDropping == 1) dropCells()
+		if (needDropping == 1) {
+			dropCells()
+		}
 		updateScores()
 
 	}	
@@ -366,118 +366,66 @@ function handler(e) {
 
 
 function removeGaps(x,y) {
-
 	var tempPos = 0
-
 	for (j=0;j<Math.max(heightArray[x],y+1);++j) {
-
 		if (boardArray[x][j] != '#ffffff') {
-
 			boardArray[x][tempPos] = boardArray[x][j]
-
 			eval('document.all.cell' + cellNum(x,tempPos) + '.style.backgroundColor = "' + boardArray[x][tempPos] + '"')		
-
 			tempPos += 1
-
 		}
-
 	}
 
 	for (j=tempPos;j<Math.max(heightArray[x],y+1);++j) {
-
 		boardArray[x][j] = '#ffffff'
-
 		eval('document.all.cell' + cellNum(x,j) + '.style.backgroundColor = "#ffffff"')
-
 	}
-
 	heightArray[x] = tempPos
-
 	if (y < heightArray[x]) {
-
 		checkIndiv(x,y)
-
 	} else {
-
 		if (heightArray[x] != 0) checkIndiv(x,heightArray[x]-1)
-
 	}
-
 }
 
 
 
 function updateScores() {
-
 	gameScore += 10*sScore
-
 	gameLevel = Math.floor(gameScore/levelUp)
-
 	if (gameLevel > 10) gameLevel = 10
-
 	lowerRate = speedArray[gameLevel]	
-
 	document.all.scoreText.value = gameScore
-
 	document.all.levelText.value = gameLevel
-
 	sScore = 0
-
 }
-
-
-
-
 
 function checkIndiv(x,y) {
-
 	checkDirn(x,y,0,1,0)
-
 	checkDirn(x,y,1,0,0)
-
 }
-
-
 
 function onBoard(x,y) {
-
 	if (x < 0 || x > boardWidth - 1 || y < 0 || y > boardHeight - 1) {
-
 		return 0
-
 	} else {
-
 		return 1
-
 	}
-
 }
 
-
-
 // Using the arrays clearX, clearY in the following two functions to store which blocks need clearing
-
 // in the main boardArray after all the checking has been done.
-
 // Rather than writing two function with basically the same mecahnics of searching, the checkDirn combines two steps.
-
 // First use is to check if there are enough joined in a row in any direction to clear. (whichOption = 0)
-
 // If there are enough then the same procedure to locate these blocks is used but rather than counting.
-
 // The function itself checks if there are enough then calls itself again only with a different option (whichOption = 1)
-
-
-
 function checkDirn(x,y,dx,dy,whichOption) {
-
-	if (clearArray[x][y][dirn(dx,dy)] == 1) return
+	if (clearArray[x][y][dirn(dx,dy)] == 1) { 
+		return
+	}
 
 	var colorCount = 1
 	var blockColor = boardArray[x][y]
-
 	if (whichOption == 1) {
-
 		var nBlocks = 1
 		dropArray[x] = 1
 		clearX[clearX.length] = x
@@ -486,216 +434,125 @@ function checkDirn(x,y,dx,dy,whichOption) {
 		eval('document.all.cell' + cellNum(x,y) + '.style.backgroundColor = "#ffffff"')
 	}
 
-
-
 	var n = 1
-
 	while (onBoard(x+dx*n,y+dy*n) == 1) {
-
 		if (boardArray[x+dx*n][y+dy*n] == blockColor) {
-
 			if (whichOption == 0) colorCount += 1
-
 			if (whichOption == 1) {
-
 				nBlocks += 1
-
 				dropArray[x+dx*n] = 1
-
 				clearX[clearX.length] = x+dx*n
-
 				clearY[clearY.length] = y+dy*n
-
 				clearArray[x+dx*n][y+dy*n][dirn(dx,dy)] = 1
-
 				eval('document.all.cell' + cellNum(x+dx*n,y+dy*n) + '.style.backgroundColor = "#ffffff"')
-
 			}
-
 			n += 1
-
 		} else {
-
 			break
-
 		}
-
-	}
-
-
+	} // end while
 
 	n = 1
-
 	while (onBoard(x-dx*n,y-dy*n) == 1) {
-
 		if (boardArray[x-dx*n][y-dy*n] == blockColor) {
-
-			if (whichOption == 0) colorCount += 1
-
-			if (whichOption == 1) {
-
-				nBlocks += 1
-
-				dropArray[x-dx*n] = 1
-
-				clearX[clearX.length] = x-dx*n
-
-				clearY[clearY.length] = y-dy*n
-
-				clearArray[x-dx*n][y-dy*n][dirn(dx,dy)] = 1
-
-				eval('document.all.cell' + cellNum(x-dx*n,y-dy*n) + '.style.backgroundColor = "#ffffff"')
-
+			if (whichOption == 0) { 
+				colorCount += 1
 			}
-
+			if (whichOption == 1) {
+				nBlocks += 1
+				dropArray[x-dx*n] = 1
+				clearX[clearX.length] = x-dx*n
+				clearY[clearY.length] = y-dy*n
+				clearArray[x-dx*n][y-dy*n][dirn(dx,dy)] = 1
+				eval('document.all.cell' + cellNum(x-dx*n,y-dy*n) + '.style.backgroundColor = "#ffffff"')
+			}
 			n += 1
-
 		} else {
-
 			break
-
 		}
+	} // end while
 
+	if (whichOption == 0 && colorCount >= 3) {
+		checkDirn(x,y,dx,dy,1)
 	}
-
-	if (whichOption == 0 && colorCount >= 3) checkDirn(x,y,dx,dy,1)
-
 	if (whichOption == 1) {
-
 		sScore += nBlocks
-
 		needDropping = 1
 		console.log("Cleared a thing:  ", clearX, clearY); 
+		// THIS IS WHERE THINGS HAPPEN YES YES YES
 		console.log(boardArray); // YES.  This is the array of colours:  I just need to figure out how to index in to it
 		// Holy shit, parallel list coordinates.  Ah well, I can work with that.
-
-
+		// OK, So I need to put a very simple play beat in here
 	}
-
 }
-
-
 
 function dirn(dx,dy) {
-
 	if (dx == 0 && dy == 1) return 0
-
 	if (dx == 1 && dy == 0) return 1
-
 }
 
-
-
 // clears blocks that need clearing and reset the clearX/Y arrays for next use
-
 // update the number of blocks cleared; note the way clearX/Y have been filled, will lead to repeats, so need to be careful when counting
-
-
-
 function updateBoardArray() {
-
 	for (i=0;i<clearX.length;++i) {
-
-		if (boardArray[clearX[i]][clearY[i]] != '#ffffff') clearedBlocks += 1
-
+		if (boardArray[clearX[i]][clearY[i]] != '#ffffff') {
+			clearedBlocks += 1
+		}
 		boardArray[clearX[i]][clearY[i]] = '#ffffff'
-
 		clearArray[clearX[i]][clearY[i]] = new Array()
-
 	}
-
 	document.all.blocksText.value = clearedBlocks
-
 	clearX = new Array()
-
 	clearY = new Array()
-
 }
 
 
 
 function dropCells() {
-
 	sDrops += 1
-
 	needDropping = 0
-
 	updateBoardArray()
-
 	for (i=0;i<boardWidth;++i) {
-
 		if (dropArray[i] == 1) {
-
 			var tempPos = 0
-
 			var lowestDrop = boardHeight
-
 			for (j=0;j<heightArray[i];++j) {
-
-				if (boardArray[i][j] == '#ffffff' && j < lowestDrop) lowestDrop = j				
-
-				if (boardArray[i][j] != '#ffffff') {
-
-					boardArray[i][tempPos] = boardArray[i][j]
-
-					eval('document.all.cell' + cellNum(i,tempPos) + '.style.backgroundColor = "' + boardArray[i][tempPos] + '"')		
-
-					tempPos += 1
-
+				if (boardArray[i][j] == '#ffffff' && j < lowestDrop) { 
+					lowestDrop = j
 				}
-
+				if (boardArray[i][j] != '#ffffff') {
+					boardArray[i][tempPos] = boardArray[i][j]
+					eval('document.all.cell' + cellNum(i,tempPos) + '.style.backgroundColor = "' + boardArray[i][tempPos] + '"')	
+					tempPos += 1
+				}
 			}
 
 			for (j=tempPos;j<heightArray[i];++j) {
-
 				boardArray[i][j] = '#ffffff'
-
 				eval('document.all.cell' + cellNum(i,j) + '.style.backgroundColor = "#ffffff"')
-
 			}
-
 			heightArray[i] = tempPos
-
 			dropArray[i] = 0
-
 		}
-
 	}
-
 	for (i=0;i<boardWidth;++i) {
-
 		for (j=lowestDrop;j<heightArray[i];++j) checkIndiv(i,j)
 
 	}
-
 	if (needDropping == 1) dropCells()
-
 }
-
 
 
 function endGame() {
-
 	stillPlaying = 0
-
 	alert('Game over!')
-
 	clearTimeout(keepMoving)
-
 }
 
 
-
 mainBoard()
-
 //lowerBlock()
-
 //--> 
-
 </SCRIPT>
-
-
-
 </BODY>
-
 </HTML>
