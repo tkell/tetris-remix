@@ -14,15 +14,28 @@
 </HEAD>
 <BODY bgColor=#ffffff class="v10">
 
-
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script type="text/javascript" src='remix.js'></script>
 <script type="text/javascript" src='buffer-loader.js'></script>
 <script language="javascript">
 
+
 <!--
 
+// Remix globals.  I need four colors / tracks
+// SND 15, 16, 7, 4
+var apiKey = 'WOUHTN44BMS5SMPF2';
+var trackIDs = ['TRTXBSY14165472E97', 'TRNOMVO141654877C6', 'TRIXKNU14165490C70', 'TREEQSM14165497489'];
+var trackURLs = ['audio/snd-0.mp3', 'audio/snd-1.mp3', 'audio/snd-2.mp3', 'audio/snd-3.mp3']
 
-// Tetris global
+var remixer;
+var player;
+var filteredPlayer;
+var tracks = [null, null, null, null];
+var context = new webkitAudioContext();
+remixer = createJRemixer(context, $, apiKey);
+
+// Tetris globals
 var boardHeight = 12;
 var boardWidth  = 6;
 var numberColors = 5;
@@ -52,55 +65,71 @@ var blockColor 		= null					// used to check if any blocks need clearing
 
 // sets up the board to start the game...
 function mainBoard() {
-	document.writeln('<div id="board" style="position:absolute; left:50; top:50; z-index:2; border: 1px none #000000">')
-	document.writeln('<div id="cursor" style="position:absolute; left:0; top:0; z-index:1; border: 1px none #000000"><img src="gfx/cursor.gif"></div>')
-	document.writeln('<table border="0" cellspacing="0" cellpadding="0" class="v10"><tr>')
-    document.writeln('<td>')
 
-  
-// I *think* that I can put my remix call here, and then call initBoard to start things...but emphasis on think.
-// Ah, no, I think need to call the entire block below here in order to make things happen
+	var remixIndex = 0;
+    function multipleRemix(tracks, trackIDs, trackURLs) {
+        // do a remix!
+        remixer.remixTrackById(trackIDs[remixIndex], trackURLs[remixIndex], function(t, percent) {
+            tracks[remixIndex] = t;
 
-
-  initBoard()
-  document.writeln('</td>')
-  document.writeln('<td width="30">&nbsp;</td>')
-  document.writeln('<td valign="top">')
-  document.writeln('<table border="0" cellspacing="1" cellpadding="10" bgcolor="#666666" class="v10">')
-  document.writeln('<tr bgcolor="#dddddd">')
-  document.writeln('<td>Level</td><td><input type="text" name="levelText" value="0" size="3" readonly class="formtext"></td>')
-  document.writeln('</tr>')
-  document.writeln('<tr bgcolor="#dddddd"><td>Score</td><td><input type="text" name="scoreText" value="0" size="3" readonly class="formtext"></td></tr>')
-  document.writeln('<tr bgcolor="#dddddd"><td>Blocks</td><td><input type="text" name="blocksText" value="0" size="3" readonly class="formtext"></td></tr>')
-  document.writeln('<tr bgcolor="#dddddd"><td colspan="2"><div align="center"><input type="button" value="Restart" onClick="location.reload()"></div></td></tr>')
-  document.writeln('</table>')
-  document.writeln('</td>')
-  document.writeln('</tr></table>')
-  document.writeln('</div>')
+            consol.log(percent + "% of the track loaded...");
+            if (tracks[remixIndex].status == 'ok') {
+                // Do the next one!
 
 
+                remixIndex = remixIndex + 1;
+                if (remixIndex < tracks.length) {
+                    console.log('Loaded track ' + (remixIndex) + ', running analysis...');
+                    multipleRemix(tracks, trackIDs, trackURLs);
+                }
+                else {
+                    console.log("Everything loaded, this is my jam");
 
-// just make sure you don't start with 3 in a row!
+				document.writeln('<div id="board" style="position:absolute; left:50; top:50; z-index:2; border: 1px none #000000">')
+				document.writeln('<div id="cursor" style="position:absolute; left:0; top:0; z-index:1; border: 1px none #000000"><img src="gfx/cursor.gif"></div>')
+				document.writeln('<table border="0" cellspacing="0" cellpadding="0" class="v10"><tr>')
+				document.writeln('<td>')
 
-	for (i=0;i<2;++i) { nextArray[i] = colorArray[Math.floor(Math.random()*numberColors)] }
+				  
+				// I *think* that I can put my remix call here, and then call initBoard to start things...but emphasis on think.
+				// Ah, no, I think need to call the entire block below here in order to make things happen
 
-	var nextColor = colorArray[Math.floor(Math.random()*numberColors)]
 
-	for (i=2;i<boardWidth;++i) {
+				initBoard()
+				document.writeln('</td>')
+				document.writeln('<td width="30">&nbsp;</td>')
+				document.writeln('<td valign="top">')
+				document.writeln('<table border="0" cellspacing="1" cellpadding="10" bgcolor="#666666" class="v10">')
+				document.writeln('<tr bgcolor="#dddddd">')
+				document.writeln('<td>Level</td><td><input type="text" name="levelText" value="0" size="3" readonly class="formtext"></td>')
+				document.writeln('</tr>')
+				document.writeln('<tr bgcolor="#dddddd"><td>Score</td><td><input type="text" name="scoreText" value="0" size="3" readonly class="formtext"></td></tr>')
+				document.writeln('<tr bgcolor="#dddddd"><td>Blocks</td><td><input type="text" name="blocksText" value="0" size="3" readonly class="formtext"></td></tr>')
+				document.writeln('<tr bgcolor="#dddddd"><td colspan="2"><div align="center"><input type="button" value="Restart" onClick="location.reload()"></div></td></tr>')
+				document.writeln('</table>')
+				document.writeln('</td>')
+				document.writeln('</tr></table>')
+				document.writeln('</div>')
 
-		while(nextColor == nextArray[i-1] && nextColor == nextArray[i-2]) nextColor = colorArray[Math.floor(Math.random()*numberColors)]
+				// ...just make sure you don't start with 3 in a row!
+				for (i=0;i<2;++i) { 
+					nextArray[i] = colorArray[Math.floor(Math.random()*numberColors)] 
+				}
+				var nextColor = colorArray[Math.floor(Math.random()*numberColors)]
+				for (i=2;i<boardWidth;++i) {
+					while(nextColor == nextArray[i-1] && nextColor == nextArray[i-2]) nextColor = colorArray[Math.floor(Math.random()*numberColors)]
+					nextArray[i] = nextColor
+				}
+				updateCursor()
+				updateScores()
+				newBlock() // This one starts the game
+                }               
+            }
+        });
+    }
 
-		nextArray[i] = nextColor
-
-	}
-	updateCursor()
-	updateScores()
-	newBlock() // This one starts the game
-
-}
-
-// End of the init block, I thiiiiink.  
-
+    multipleRemix(tracks, trackIDs, trackURLs);
+} // end mainBoard
 
 
 function initBoard() {
@@ -493,7 +522,7 @@ function endGame() {
 }
 
 
-mainBoard()
+mainBoard() // actually sets everything up
 //lowerBlock()
 //--> 
 </SCRIPT>
