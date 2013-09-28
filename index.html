@@ -30,10 +30,10 @@ var trackURLs = ['audio/snd-0.mp3', 'audio/snd-1.mp3', 'audio/snd-2.mp3', 'audio
 
 var remixer;
 var player;
-var filteredPlayer;
 var tracks = [null, null, null, null];
 var context = new webkitAudioContext();
 remixer = createJRemixer(context, $, apiKey);
+player = remixer.getPlayer();
 
 // Tetris globals
 var boardHeight = 12;
@@ -459,6 +459,7 @@ function checkDirn(x,y,dx,dy,whichOption) {
 		needDropping = 1
 		console.log("Cleared a thing:  ", clearX, clearY); 
 		// THIS IS WHERE THINGS HAPPEN YES YES YES
+		player.play(0, tracks[0].analysis.beats[0])
 		console.log(boardArray); // YES.  This is the array of colours:  I just need to figure out how to index in to it
 		// Holy shit, parallel list coordinates.  Ah well, I can work with that.
 		// OK, So I need to put a very simple play beat in here
