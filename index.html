@@ -1,28 +1,17 @@
 
 <HTML>
-
 <HEAD>
-
 <TITLE>Tetris Attack using javascript</TITLE>
-
 <META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
-
 <STYLE type=text/css>
 
 .v10 				{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt}
-
 .v08 				{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt}
-
 .formtext		{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; border: none; text-align: right}
-
 .formbutton	{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt}
 
 </STYLE>
-
 </HEAD>
-
-
-
 <BODY bgColor=#ffffff class="v10">
 
 
@@ -33,15 +22,10 @@
 
 
 
-var boardHeight 	= 12
-
-var boardWidth  	= 6
-
-var numberColors 	= 5
-
-var cellSize 			= 25						// size of the blocks in pixels
-
-
+var boardHeight = 12;
+var boardWidth  = 6;
+var numberColors = 5;
+var cellSize 	= 25; // size of the blocks in pixels.  Would need to change cursor.gif too!
 
 var boardArray 		= new Array()		// array of the colours on the board
 
@@ -582,6 +566,7 @@ function checkDirn(x,y,dx,dy,whichOption) {
 
 		needDropping = 1
 		console.log("Cleared a thing:  ", clearX, clearY); 
+		console.log(boardArray); // YES.  This is the array of colours:  I just need to figure out how to index in to it
 		// Holy shit, parallel list coordinates.  Ah well, I can work with that.
 
 
