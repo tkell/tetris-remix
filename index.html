@@ -114,6 +114,13 @@ function mainBoard() {
     multipleRemix(tracks, trackIDs, trackURLs);
 } // end mainBoard
 
+function writeCredits() {
+	document.writeln('<div id="credit-div" class="v.08" style="position:absolute; left:50; top:450;>');
+	document.writeln('<p id="credits">Powered by <a href="http://echonest.github.io/remix"> Echo Nest Remix</a> and Lawrence Wo\'s <a href="http://www.lawrence.wo.dsl.pipex.com/javascript/tetris_attack/">Tetris Attack.js</a><br/>');
+	document.writeln('Music by <a href="http://en.wikipedia.org/wiki/Snd_(band)">SND</a>, from the <a href="http://boomkat.com/downloads/275459-snd-stdio">stdio</a> album<br/>');
+	document.writeln('Made by <a href="http://www.tide-pool.ca/">Thor Kell</a>, at <a href="http://www.hackingarts.com/">Hacking Arts 2013</a></p>');
+	document.writeln('</div>')
+}
 
 function createTetris() {
 	document.writeln('<div id="board" style="position:absolute; left:50; top:50; z-index:2; border: 1px none #000000">')
@@ -125,16 +132,12 @@ function createTetris() {
 	document.writeln('<td width="30">&nbsp;</td>')
 	document.writeln('<td valign="top">')
 	document.writeln('<table border="0" cellspacing="1" cellpadding="10" bgcolor="#666666" class="v10">')
-	document.writeln('<tr bgcolor="#dddddd">')
-	document.writeln('<td>Level</td><td><input type="text" name="levelText" value="0" size="3" readonly class="formtext"></td>')
-	document.writeln('</tr>')
-	document.writeln('<tr bgcolor="#dddddd"><td>Score</td><td><input type="text" name="scoreText" value="0" size="3" readonly class="formtext"></td></tr>')
-	document.writeln('<tr bgcolor="#dddddd"><td>Blocks</td><td><input type="text" name="blocksText" value="0" size="3" readonly class="formtext"></td></tr>')
-	document.writeln('<tr bgcolor="#dddddd"><td colspan="2"><div align="center"><input type="button" value="Restart" onClick="restartTetris()"></div></td></tr>')
+	document.writeln('<tr bgcolor="#dddddd"><td colspan="2"><div align="center"><input type="button" value="re|start" onClick="startTetris()"></div></td></tr>')
 	document.writeln('</table>')
 	document.writeln('</td>')
 	document.writeln('</tr></table>')
 	document.writeln('</div>')
+	writeCredits();
 	// ...just make sure you don't start with 3 in a row!
 	for (i=0;i<2;++i) { 
 		nextArray[i] = colorArray[Math.floor(Math.random()*numberColors)] 
@@ -149,155 +152,100 @@ function createTetris() {
 	gameLevel = 0;
 
 	document.onkeypress = handler;
-	alert("Begin...");
-	newBlock() // This one starts the game
-
-	
-
+	//alert("Begin...");
+	//newBlock() // This one starts the game
 }
 
-function restartTetris() {
-	isPlaying = false
-	player.stop();
-	remixed = [];
-	$('div#board').remove(); // may need to remove the tables as well
-	createTetris();
+function startTetris() {
+	if (isPlaying == true) { // restarting
+		isPlaying = false
+		player.stop();
+		remixed = [];
+		clearTimeout(keepMoving)
+		$('div#board').remove();
+		$('div#credit-div').remove();
+		createTetris();
+		newBlock();
+	}
+	else { // starting from zero
+		newBlock();
+	}
+
+
 }
 
 function initBoard() {
-
 	for (i=0;i<boardWidth;++i) {
-
 		boardArray[i] = new Array()
-
 		clearArray[i] = new Array()
-
 		dropArray[i] = 0
-
 		heightArray[i] = 0
-
 		for (j=0;j<boardHeight;++j) {
-
 			boardArray[i][j] = '#ffffff'
-
 			clearArray[i][j] = new Array(0,0)
-
 		}
-
 	}
-
 	document.writeln('<table cellspacing="1" border="0" cellpadding="0" bgcolor="#dddddd">')	
-
 	for (i=0;i<boardHeight;++i) {
-
 		document.writeln('<tr>')
-
 		for (j=0;j<boardWidth;++j) {
-
 			document.writeln('<td id="cell' + cellNum(j,boardHeight-1-i) + '" bgcolor="#ffffff"><img src="gfx/null.gif" width="' + cellSize + '" height="' + cellSize + '"></td>')
-
 		}
-
 		document.writeln('</tr>')
-
 	}
-
 	document.writeln('</table>')
-
-
-
 	document.writeln('<br>Next:<br><table cellspacing="1" border="0" cellpadding="0" bgcolor="#dddddd"><tr>')
-
 	for (i=0;i<boardWidth;++i) document.writeln('<td id="next' + i + '" bgcolor="#ffffff"><img src="gfx/null.gif" width="' + cellSize + '" height="' + cellSize + '"></td>')
-
 	document.writeln('</tr></table>')
 }
 
 // used to calculated a 4-digit number for each cell, e.g. (2,3) becomes 0203, (4,12) becomes 0412
 function cellNum(x,y) {
-
 	var nameStr = ""
-
 	if (x<10) nameStr = "0"
-
 	nameStr += x
-
 	if (y<10) nameStr += "0"
-
 	nameStr += y
-
 	return nameStr
 }
 
 function updateCursor() {
-
 	document.all.cursor.style.left = (cursorX)*(cellSize+1)-1
-
 	document.all.cursor.style.top = (boardHeight-cursorY-1)*(cellSize+1)-1
 }	
 
 // shuffle blocks up to make way for a new 'next' row
 // the new 'next' row when chosen shouldn't complete a row of 3 horizontally or vertically
 function newBlock() {
-
 	for (i=0;i<boardWidth;++i) {
-
 	if (heightArray[i] == boardHeight) { endGame(); return false }
-
 		for (j=heightArray[i]-1;j>=0;--j) {
-
 			colorBelow = boardArray[i][j]
-
 			boardArray[i][j+1] = colorBelow
-
 			eval('document.all.cell' + cellNum(i,j+1) + '.style.backgroundColor = "' + colorBelow + '"')
-
 		}		
-
 		boardArray[i][0] = nextArray[i]
-
 		eval('document.all.cell' + cellNum(i,0) + '.style.backgroundColor = "' + nextArray[i] + '"')
-
-
-
 		var nextColor = colorArray[Math.floor(Math.random()*numberColors)]
-
 		if (i > 1) {
-
 			while((nextColor == boardArray[i][0] && nextColor == boardArray[i][1]) || (nextColor == nextArray[i-1] && nextColor == nextArray[i-2])) nextColor = colorArray[Math.floor(Math.random()*numberColors)]
 
 		} else {
-
 			while (nextColor == boardArray[i][0] && nextColor == boardArray[i][1]) nextColor = colorArray[Math.floor(Math.random()*numberColors)]
-
 		}
-
-
-
 		nextArray[i] = nextColor
-
-
-
 		eval('document.all.next' + i + '.style.backgroundColor = "' + nextArray[i] + '"')
-
 		heightArray[i] += 1
-
 	}
-
 	if (cursorY < boardHeight-1) cursorY += 1
-
 	updateCursor()
 
 
 
 	for (i=0;i<boardWidth;++i) checkIndiv(i,0)
-
 	if (needDropping == 1) {
-
 		dropCells()
-
 		updateScores()
-
 	}
 
 	keepMoving = setTimeout('newBlock()', upRate)
@@ -375,8 +323,6 @@ function updateScores() {
 	gameLevel = Math.floor(gameScore/levelUp)
 	if (gameLevel > 10) gameLevel = 10
 	lowerRate = speedArray[gameLevel]	
-	document.all.scoreText.value = gameScore
-	document.all.levelText.value = gameLevel
 	sScore = 0
 }
 
@@ -496,7 +442,6 @@ function updateBoardArray() {
 		boardArray[clearX[i]][clearY[i]] = '#ffffff'
 		clearArray[clearX[i]][clearY[i]] = new Array()
 	}
-	document.all.blocksText.value = clearedBlocks
 	clearX = new Array()
 	clearY = new Array()
 }
