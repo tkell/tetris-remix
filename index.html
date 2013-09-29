@@ -92,6 +92,10 @@ var blockColor 		= null				// used to check if any blocks need clearing
 
 // sets up the board to start the game...
 function mainBoard() {
+	document.writeln('<div id="splash-div" style="position:absolute; left:50; top:450; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt;">');
+	document.writeln('tetrix-remix:  loading....');
+	document.writeln('</div>');
+
 	var remixIndex = 0;
     function multipleRemix(tracks, trackIDs, trackURLs) {
         // do a remix!
@@ -127,6 +131,7 @@ function writeCredits() {
 }
 
 function createTetris() {
+	$('div#splash-div').remove();
 	document.writeln('<div id="board" style="position:absolute; left:50; top:50; z-index:2; border: 1px none #000000">')
 	document.writeln('<div id="cursor" style="position:absolute; left:0; top:0; z-index:1; border: 1px none #000000"><img src="gfx/cursor.gif"></div>')
 	document.writeln('<table border="0" cellspacing="0" cellpadding="0" class="v10"><tr>')
@@ -414,7 +419,7 @@ function checkDirn(x,y,dx,dy,whichOption) {
 			var colorString = boardArray[clearX[i]][clearY[i]];
 			var theTrack = tracks[colorDict[colorString]];
 			var beatIndex = (clearY[i] * 6) + clearX[i];
-			beatIndex = beatIndex + 8 + gameLevel // avoid quiet or boring intros, shift with speed
+			beatIndex = beatIndex + 4 // avoid quiet or boring intros, shift with speed
 			//console.log(colorString, theTrack, beatIndex, remixedIndex)
 			remixed[remixedIndex] = theTrack.analysis.beats[beatIndex]
 			remixedIndex = (remixedIndex + 1) % loopLength
