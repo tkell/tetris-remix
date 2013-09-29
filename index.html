@@ -5,9 +5,9 @@
 <META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
 <STYLE type=text/css>
 
-.v10 				{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt}
-.v08 				{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt}
-.formtext		{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; border: none; text-align: right}
+.v10 		{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt}
+.v08 		{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt}
+.formtext	{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; border: none; text-align: right}
 .formbutton	{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt}
 
 </STYLE>
@@ -115,7 +115,7 @@ function mainBoard() {
 } // end mainBoard
 
 function writeCredits() {
-	document.writeln('<div id="credit-div" class="v.08" style="position:absolute; left:50; top:450;>');
+	document.writeln('<div id="credit-div" style="position:absolute; left:50; top:450; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt;">');
 	document.writeln('<p id="credits">Powered by <a href="http://echonest.github.io/remix"> Echo Nest Remix</a> and Lawrence Wo\'s <a href="http://www.lawrence.wo.dsl.pipex.com/javascript/tetris_attack/">Tetris Attack.js</a><br/>');
 	document.writeln('Music by <a href="http://en.wikipedia.org/wiki/Snd_(band)">SND</a>, from the <a href="http://boomkat.com/downloads/275459-snd-stdio">stdio</a> album<br/>');
 	document.writeln('Made by <a href="http://www.tide-pool.ca/">Thor Kell</a>, at <a href="http://www.hackingarts.com/">Hacking Arts 2013</a></p>');
@@ -131,9 +131,7 @@ function createTetris() {
 	document.writeln('</td>')
 	document.writeln('<td width="30">&nbsp;</td>')
 	document.writeln('<td valign="top">')
-	document.writeln('<table border="0" cellspacing="1" cellpadding="10" bgcolor="#666666" class="v10">')
-	document.writeln('<tr bgcolor="#dddddd"><td colspan="2"><div align="center"><input type="button" value="re|start" onClick="startTetris()"></div></td></tr>')
-	document.writeln('</table>')
+	document.writeln('<div align="center"><input type="button" value="re|start" onClick="startTetris()"></div>')
 	document.writeln('</td>')
 	document.writeln('</tr></table>')
 	document.writeln('</div>')
@@ -194,7 +192,7 @@ function initBoard() {
 		document.writeln('</tr>')
 	}
 	document.writeln('</table>')
-	document.writeln('<br>Next:<br><table cellspacing="1" border="0" cellpadding="0" bgcolor="#dddddd"><tr>')
+	document.writeln('<br/><br/><table cellspacing="1" border="0" cellpadding="0" bgcolor="#dddddd"><tr>')
 	for (i=0;i<boardWidth;++i) document.writeln('<td id="next' + i + '" bgcolor="#ffffff"><img src="gfx/null.gif" width="' + cellSize + '" height="' + cellSize + '"></td>')
 	document.writeln('</tr></table>')
 }
@@ -412,7 +410,6 @@ function checkDirn(x,y,dx,dy,whichOption) {
 			var colorString = boardArray[clearX[i]][clearY[i]];
 			var theTrack = tracks[colorDict[colorString]];
 			var beatIndex = (clearY[i] * 6) + clearX[i];
-
 			console.log(colorString, theTrack, beatIndex)
 			remixed.push(theTrack.analysis.beats[beatIndex])
 		}
