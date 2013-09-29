@@ -44,8 +44,10 @@ function playLoop(player) {
 		totalTime = totalTime + duration;
 	}
 	totalTime = 1000 * totalTime
-	player.play(0, remixed)
-	setTimeout(function() {playLoop(player, remixed)}, totalTime);
+	if (isPlaying == true) {
+		player.play(0, remixed)
+		setTimeout(function() {playLoop(player, remixed)}, totalTime);
+	}
 }
 
 var colorDict = {'#0066cc': 0, // blue
@@ -86,7 +88,6 @@ var blockColor 		= null				// used to check if any blocks need clearing
 
 // sets up the board to start the game...
 function mainBoard() {
-
 	var remixIndex = 0;
     function multipleRemix(tracks, trackIDs, trackURLs) {
         // do a remix!
@@ -129,7 +130,7 @@ function createTetris() {
 	document.writeln('</tr>')
 	document.writeln('<tr bgcolor="#dddddd"><td>Score</td><td><input type="text" name="scoreText" value="0" size="3" readonly class="formtext"></td></tr>')
 	document.writeln('<tr bgcolor="#dddddd"><td>Blocks</td><td><input type="text" name="blocksText" value="0" size="3" readonly class="formtext"></td></tr>')
-	document.writeln('<tr bgcolor="#dddddd"><td colspan="2"><div align="center"><input type="button" value="Restart" onClick="location.reload()"></div></td></tr>')
+	document.writeln('<tr bgcolor="#dddddd"><td colspan="2"><div align="center"><input type="button" value="Restart" onClick="restartTetris()"></div></td></tr>')
 	document.writeln('</table>')
 	document.writeln('</td>')
 	document.writeln('</tr></table>')
@@ -146,12 +147,20 @@ function createTetris() {
 	updateCursor()
 	updateScores()
 
-	document.onkeypress = handler; 
+	document.onkeypress = handler;
 	alert("Begin...");
 	newBlock() // This one starts the game
 
 	
 
+}
+
+function restartTetris() {
+	isPlaying = false
+	player.stop();
+	remixed = [];
+	$('div#board').remove(); // may need to remove the tables as well
+	createTetris();
 }
 
 function initBoard() {
@@ -462,8 +471,8 @@ function checkDirn(x,y,dx,dy,whichOption) {
 		}
 
 		if (isPlaying == false) {
-			playLoop(player);
 			isPlaying = true;
+			playLoop(player);
 		}
 
 		// Print the indicies and colours of each square, as we clear them. 
@@ -533,6 +542,8 @@ function endGame() {
 	alert('Game over!')
 	clearTimeout(keepMoving)
 	player.stop(); // need to make this a harder disconnect
+	remixed = [];
+	isPlaying = false;
 }
 
 
