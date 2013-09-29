@@ -159,7 +159,7 @@ function createTetris() {
 }
 
 function startTetris() {
-	if (isPlaying == true) { // restarting
+	if (isPlaying == true || stillPlaying == 0 ) { // restarting
 		isPlaying = false
 		player.stop();
 		remixed = [];
@@ -260,8 +260,6 @@ function handler(e) {
 
   	var key = e.charCode;
 	var chr = String.fromCharCode(key);
-		
-	if (chr == "l") endGame()
 	if (chr == "w" && cursorY < boardHeight-1) cursorY += 1
 	if (chr == "s" && cursorY > 0) cursorY -= 1
 	if (chr == "a" && cursorX > 0) cursorX -= 1
