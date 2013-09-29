@@ -3,14 +3,16 @@
 <HEAD>
 <TITLE>Tetris Remix</TITLE>
 <META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
-<STYLE type=text/css>
-
-.v10 		{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt}
-.v08 		{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt}
-.formtext	{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; border: none; text-align: right}
-.formbutton	{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt}
-
-</STYLE>
+<style>
+	a {color: #000000;} 
+	a:hover, a:visited, a:link, a:active {
+		color: #000000;
+	}
+	.v10 		{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt}
+	.v08 		{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt}
+	.formtext	{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; border: none; text-align: right}
+	.formbutton	{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt}
+</style>
 </HEAD>
 <BODY bgColor=#ffffff class="v10">
 
@@ -34,6 +36,8 @@ var context = new webkitAudioContext();
 var remixer = createJRemixer(context, $, apiKey);
 var player = remixer.getPlayer()
 var remixed = [];
+var remixedIndex = 0;
+var loopLength = 32;
 var isPlaying = false;
 
 // GLOBAL VARIABLE ALLLLLLERT
@@ -105,7 +109,6 @@ function mainBoard() {
                 else {
                     console.log("Everything loaded");
                     createTetris();
-
                 }  // end within-remix init
             }
         });
@@ -116,9 +119,10 @@ function mainBoard() {
 
 function writeCredits() {
 	document.writeln('<div id="credit-div" style="position:absolute; left:50; top:450; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt;">');
-	document.writeln('<p id="credits">Powered by <a href="http://echonest.github.io/remix"> Echo Nest Remix</a> and Lawrence Wo\'s <a href="http://www.lawrence.wo.dsl.pipex.com/javascript/tetris_attack/">Tetris Attack.js</a><br/>');
-	document.writeln('Music by <a href="http://en.wikipedia.org/wiki/Snd_(band)">SND</a>, from the <a href="http://boomkat.com/downloads/275459-snd-stdio">stdio</a> album<br/>');
-	document.writeln('Made by <a href="http://www.tide-pool.ca/">Thor Kell</a>, at <a href="http://www.hackingarts.com/">Hacking Arts 2013</a></p>');
+	document.writeln('<p id="credits">match <strong>3</strong> or more.  <strong>wasd</strong> to move.  <strong>space</strong> to switch<br/>')
+	document.writeln('Powered by <a style="color: #000000;" href="http://echonest.github.io/remix"> Echo Nest Remix</a> and Lawrence Wo\'s <a style="color: #000000;" href="http://www.lawrence.wo.dsl.pipex.com/javascript/tetris_attack/">Tetris Attack.js</a><br/>');
+	document.writeln('Music by <a style="color: #000000;" href="http://en.wikipedia.org/wiki/Snd_(band)">SND</a>, from the <a style="color: #000000;" href="http://boomkat.com/downloads/275459-snd-stdio">stdio</a> album<br/>');
+	document.writeln('Made by <a style="color: #000000;" href="http://www.tide-pool.ca/">Thor Kell</a>, at <a style="color: #000000;" href="http://www.hackingarts.com/">Hacking Arts 2013</a></p>');
 	document.writeln('</div>')
 }
 
@@ -159,9 +163,11 @@ function startTetris() {
 		isPlaying = false
 		player.stop();
 		remixed = [];
+		remixedIndex = 0;
 		clearTimeout(keepMoving)
 		$('div#board').remove();
 		$('div#credit-div').remove();
+		stillPlaying = 1;
 		createTetris();
 		newBlock();
 	}
@@ -403,24 +409,23 @@ function checkDirn(x,y,dx,dy,whichOption) {
 	if (whichOption == 1) {
 		sScore += nBlocks
 		needDropping = 1
-		console.log("Cleared a thing:  ", clearX, clearY); 
+		//console.log("Cleared a thing:  ", clearX, clearY); 
 		
-		// Find the beats
+		// Find the beats to play
 		for (var i = 0; i < clearX.length; i++) {
 			var colorString = boardArray[clearX[i]][clearY[i]];
 			var theTrack = tracks[colorDict[colorString]];
 			var beatIndex = (clearY[i] * 6) + clearX[i];
-			console.log(colorString, theTrack, beatIndex)
-			remixed.push(theTrack.analysis.beats[beatIndex])
+			beatIndex = beatIndex + 8 + gameLevel // avoid quiet or boring intros, shift with speed
+			//console.log(colorString, theTrack, beatIndex, remixedIndex)
+			remixed[remixedIndex] = theTrack.analysis.beats[beatIndex]
+			remixedIndex = (remixedIndex + 1) % loopLength
 		}
 
 		if (isPlaying == false) {
 			isPlaying = true;
 			playLoop(player);
 		}
-
-		// Print the indicies and colours of each square, as we clear them. 
-
 	}
 }
 
