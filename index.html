@@ -140,7 +140,7 @@ function createTetris() {
 	document.writeln('</td>')
 	document.writeln('<td width="30">&nbsp;</td>')
 	document.writeln('<td valign="top">')
-	document.writeln('<div align="center"><input type="button" value="re|start" onClick="startTetris()"></div>')
+	document.writeln('<div align="center"><input type="button" id="start-button" value="re|start" onClick="startTetris()"></div>')
 	document.writeln('</td>')
 	document.writeln('</tr></table>')
 	document.writeln('</div>')
@@ -164,6 +164,7 @@ function createTetris() {
 }
 
 function startTetris() {
+	$('#start-button').blur();
 	if (isPlaying == true || stillPlaying == 0 ) { // restarting
 		isPlaying = false
 		player.stop();
