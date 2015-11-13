@@ -26,7 +26,13 @@
 
 // Remix globals. 
 var apiKey = 'WOUHTN44BMS5SMPF2';
-var trackIDs = ['TRTXBSY14165472E97', 'TRNOMVO141654877C6', 'TRIXKNU14165490C70', 'TREEQSM14165497489', 'TRSSGQH14166C0DAD8'];
+var trackIDs = ['TRTXBSY14165472E97.json', 
+                'TRNOMVO141654877C6.json',
+                'TRIXKNU14165490C70.json',
+                'TREEQSM14165497489.json',
+                'TRSSGQH14166C0DAD8.json',
+               ];
+
 var trackURLs = ['audio/snd-0.mp3', 'audio/snd-1.mp3', 'audio/snd-2.mp3', 'audio/snd-3.mp3', 'audio/snd-4.mp3']
 
 var remixer;
@@ -99,7 +105,7 @@ function mainBoard() {
 	var remixIndex = 0;
     function multipleRemix(tracks, trackIDs, trackURLs) {
         // do a remix!
-        remixer.remixTrackById(trackIDs[remixIndex], trackURLs[remixIndex], function(t, percent) {
+        remixer.remixTrackByURL(trackIDs[remixIndex], trackURLs[remixIndex], function(t, percent) {
             tracks[remixIndex] = t;
 
             console.log(percent + "% of the track loaded...");
