@@ -38,7 +38,7 @@ var trackURLs = ['audio/snd-0.mp3', 'audio/snd-1.mp3', 'audio/snd-2.mp3', 'audio
 var remixer;
 var player;
 var tracks = [null, null, null, null, null];
-var context = new webkitAudioContext();
+var context = new AudioContext();
 var remixer = createJRemixer(context, $, apiKey);
 var player = remixer.getPlayer()
 var remixed = [];
@@ -108,7 +108,7 @@ function mainBoard() {
         remixer.remixTrackByURL(trackIDs[remixIndex], trackURLs[remixIndex], function(t, percent) {
             tracks[remixIndex] = t;
 
-            console.log(percent + "% of the track loaded...");
+            console.log("Loading track... ");
             if (tracks[remixIndex].status == 'ok') {
                 // Do the next one!
                 remixIndex = remixIndex + 1;
